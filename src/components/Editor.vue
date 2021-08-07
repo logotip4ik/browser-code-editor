@@ -80,27 +80,30 @@ export default {
 		grid-auto-flow: row;
 		grid-template-columns: repeat(3, 1fr);
 		align-items: center;
-		border-bottom: 1px solid $border-color;
 		font-family: system-ui, sans-serif;
 
 		&__item {
 			width: 100%;
 			padding: 0.25rem 0;
 			border-right: 1px solid $border-color;
+			border-bottom: 1px solid $border-color;
 			text-align: center;
 			font-weight: 400;
-			transition: background-color 0.3s ease, color 0.3s ease;
+			transition: background-color 0.3s ease, color 0.3s ease,
+				border-color 0.3s ease;
 
 			&:hover {
 				transition: none;
 				color: #ff75b5;
 				background-color: transparentize($color: #fff, $amount: 0.99);
 				cursor: pointer;
+				// border-color: #ff75b5;
 			}
 
 			&--selected {
 				color: #ff75b5;
 				// font-weight: bold;
+				border-color: #ff75b5;
 				background-color: transparentize($color: #fff, $amount: 0.95);
 			}
 		}
