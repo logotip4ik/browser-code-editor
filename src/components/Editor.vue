@@ -1,5 +1,5 @@
 <template>
-	<div class="tabs cm-s-panda-syntax cm-trailingspace">
+	<div class="tabs cm-s-panda-syntax">
 		<header class="tabs__header">
 			<div
 				v-for="({ title }, idx) in TABS"
@@ -13,16 +13,22 @@
 				{{ title }}
 			</div>
 		</header>
-		<!-- <div
-			class="editor Codemirror cm-s-panda-syntax cm-trailingspace"
-			ref="htmlEdtior"
-		/> -->
+		<div class="editor" ref="editor">
+			<Tab
+				v-for="({ type }, idx) in TABS"
+				:key="idx"
+				:type="type"
+				v-show="idx === currentTab"
+			></Tab>
+		</div>
 	</div>
 </template>
 
 <script>
 import { onMounted, ref } from "vue";
 import { initCodeMirror } from "../helpers/initCodeMirror.js";
+
+import Tab from "./Tab.vue";
 
 export default {
 	setup() {
@@ -42,26 +48,11 @@ export default {
 				type: "javascript",
 			},
 		];
-		const currentTab = ref(0);
-
-		// const htmlCodeMirror = ref(null);
-
-		// onMounted(() => {
-		// 	htmlCodeMirror.value = initCodeMirror({
-		// 		target: htmlEdtior.value,
-		// 		isHtml: true,
-		// 		opts: {
-		// 			extraKeys: {
-		// 				Tab: "emmetExpandAbbreviation",
-		// 				Esc: "emmetResetAbbreviation",
-		// 				Enter: "emmetInsertLineBreak",
-		// 			},
-		// 		},
-		// 	});
-		// });
+		const currentTab = ref(2);
 
 		return { htmlEdtior, TABS, currentTab };
 	},
+	components: { Tab },
 };
 </script>
 
@@ -69,6 +60,10 @@ export default {
 .tabs {
 	width: 100%;
 	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: flex-start;
 
 	&__header {
 		$border-color: darken(
@@ -86,6 +81,7 @@ export default {
 			width: 100%;
 			padding: 0.25rem 0;
 			border-right: 1px solid $border-color;
+			border-left: 1px solid $border-color;
 			border-bottom: 1px solid $border-color;
 			text-align: center;
 			font-weight: 400;
@@ -97,7 +93,6 @@ export default {
 				color: #ff75b5;
 				background-color: transparentize($color: #fff, $amount: 0.99);
 				cursor: pointer;
-				// border-color: #ff75b5;
 			}
 
 			&--selected {
@@ -111,12 +106,7 @@ export default {
 }
 
 .editor {
+	height: 100%;
 	width: 100%;
-	height: 100%;
-	resize: none;
-	display: block;
-}
-.CodeMirror {
-	height: 100%;
 }
 </style>

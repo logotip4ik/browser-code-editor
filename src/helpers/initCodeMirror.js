@@ -1,7 +1,11 @@
 import emmet from "@emmetio/codemirror-plugin";
+import { CSSLint } from "csslint";
+// import "jshint";
 import CodeMirror from "codemirror/lib/codemirror.js";
 import "codemirror/keymap/sublime.js";
 import "codemirror/mode/htmlmixed/htmlmixed.js";
+import "codemirror/mode/css/css.js";
+import "codemirror/mode/javascript/javascript.js";
 // ADDONS
 import "codemirror/addon/dialog/dialog.js";
 
@@ -30,7 +34,7 @@ import "codemirror/addon/hint/anyword-hint.js";
 
 import "codemirror/addon/lint/lint.js";
 import "codemirror/addon/lint/html-lint.js";
-import "codemirror/addon/lint/javascript-lint.js";
+// import "codemirror/addon/lint/javascript-lint.js";
 import "codemirror/addon/lint/css-lint.js";
 
 import "codemirror/addon/search/match-highlighter.js";
@@ -49,7 +53,6 @@ import "codemirror/addon/scroll/simplescrollbars.js";
 import "codemirror/addon/scroll/scrollpastend.js";
 // CSS
 import "codemirror/lib/codemirror.css";
-// import "codemirror/theme/panda-syntax.css";
 import "codemirror/theme/panda-syntax.css";
 import "codemirror/addon/hint/show-hint.css";
 import "codemirror/addon/lint/lint.css";
@@ -59,7 +62,8 @@ import "codemirror/addon/dialog/dialog.css";
 import "codemirror/addon/scroll/simplescrollbars.css";
 
 const DEFAULTS = {
-	fontSize: 14,
+	fontSize: 15,
+	autoRefresh: true,
 	lineNumbers: true,
 	theme: "panda-syntax",
 	smartIndent: true,
@@ -84,10 +88,13 @@ const DEFAULTS = {
 	scrollPastEnd: true,
 };
 
-export const initCodeMirror = ({ target, isHtml, opts }) => {
+export const initCodeMirror = ({ target, mode, isHtml, opts }) => {
+	window.CSSLint = CSSLint;
+	// window.JSHint = JSHINT;
 	if (isHtml) emmet(CodeMirror);
 	return CodeMirror(target, {
 		...DEFAULTS,
 		...opts,
+		mode,
 	});
 };
