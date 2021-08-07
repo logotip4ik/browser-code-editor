@@ -1,22 +1,38 @@
 <template>
-  <h1>hello world</h1>
+	<div class="main">
+		<Editor></Editor>
+	</div>
 </template>
 
 <script>
+import Editor from "./components/Editor.vue";
+
 export default {
-  setup() {
-    return {}
-  }
-}
+	setup() {
+		return {};
+	},
+	components: {
+		Editor,
+	},
+};
 </script>
 
 <style lang="scss">
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+	scrollbar-width: none;
+}
+
+html,
+body,
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+	min-height: 100vh;
+	font-family: system-ui, sans-serif;
+}
+
+.main {
+	height: 100vh;
 }
 </style>
