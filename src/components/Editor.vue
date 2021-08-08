@@ -48,7 +48,7 @@ export default {
 		const currentTab = ref(0);
 
 		function selectBuffer(editor, name) {
-			const buf = buffers[name];
+			let buf = buffers[name];
 			if (buf.getEditor()) buf = buf.linkedDoc({ sharedHist: true });
 			const old = editor.swapDoc(buf);
 			const linked = old.iterLinkedDocs((doc) => (linked = doc));

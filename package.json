@@ -12,6 +12,7 @@
     "csslint": "^1.0.5",
     "htmlhint": "^0.15.1",
     "jshint": "^2.13.0",
+    "vite-plugin-pwa": "^0.10.0",
     "vue": "^3.0.5"
   },
   "devDependencies": {
