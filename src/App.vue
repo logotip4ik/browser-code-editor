@@ -43,7 +43,6 @@ export default {
 					createdIframeStyleTag = true;
 					break;
 				case "javascript":
-					// const id = "script";
 					const iframeWindow = iframe.value.contentWindow;
 
 					try {
@@ -55,14 +54,6 @@ export default {
 						iframeWindow
 							.FUNC_THAT_YOU_WILL_NEVER_GUESS()()
 					} catch (error) {}
-					// if (createdIframeScript)
-					// 	return (iframeDoc.getElementById(id).innerHTML = value);
-
-					// const iframeScript = document.createElement(id);
-					// iframeScript.id = id;
-					// iframeScript.innerHTML = value;
-					// iframeDoc.body.appendChild(iframeScript);
-					// createdIframeScript = true;
 					break;
 				default:
 					break;
@@ -70,7 +61,7 @@ export default {
 		}
 
 		onMounted(() => {
-			const iframeDoc = iframe.value.contentDoc;
+			const iframeDoc = iframe.value.contentDocument;
 			const iframeWindow = iframe.value.contentWindow;
 			window.addEventListener("keydown", (e) => {
 				if (!e.ctrlKey || e.key !== "s") return;
