@@ -12,16 +12,16 @@ import Editor from "./components/Editor.vue";
 export default {
 	setup() {
 		const iframe = ref(null);
-		let createdStyleTag = false;
-		let createdAppTag = false;
-		// let createdStyleTag = false;
+		let createdIframeApp = false;
+		let createdIframeStyleTag = false;
+		let createdIframeScript = false;
 		// let CSSBlobLink = null;
 
 		function updateEntry({ type, value }) {
 			const iframeDoc = iframe.value.contentDocument;
 			switch (type) {
 				case "htmlmixed":
-					if (createdAppTag)
+					if (createdIframeApp)
 						return (iframeDoc.getElementById("app").innerHTML = value);
 
 					const iframeApp = document.createElement("div");
@@ -31,21 +31,57 @@ export default {
 					iframeApp.innerHTML = value;
 
 					iframeDoc.body.appendChild(iframeApp);
-					createdAppTag = true;
+					createdIframeApp = true;
 					break;
 				case "css":
-					if (createdStyleTag)
+					if (createdIframeStyleTag)
 						return (iframeDoc.head.children[0].innerHTML = value);
 
-					const styleTag = document.createElement("style");
-					styleTag.innerHTML = value;
-					iframeDoc.head.appendChild(styleTag);
-					createdStyleTag = true;
+					const iframeStyle = document.createElement("style");
+					iframeStyle.innerHTML = value;
+					iframeDoc.head.appendChild(iframeStyle);
+					createdIframeStyleTag = true;
+					break;
+				case "javascript":
+					// const id = "script";
+					const iframeWindow = iframe.value.contentWindow;
+
+					try {
+						// Need to call "new Function" within the iframe context
+						iframeWindow.FUNC_THAT_YOU_WILL_NEVER_GUESS =
+							new iframeWindow.Function(`return function() {${value}}`);
+						// First call will return fucntion that user typed, then we will run it
+						// prettier-ignore
+						iframeWindow
+							.FUNC_THAT_YOU_WILL_NEVER_GUESS()()
+					} catch (error) {}
+					// if (createdIframeScript)
+					// 	return (iframeDoc.getElementById(id).innerHTML = value);
+
+					// const iframeScript = document.createElement(id);
+					// iframeScript.id = id;
+					// iframeScript.innerHTML = value;
+					// iframeDoc.body.appendChild(iframeScript);
+					// createdIframeScript = true;
 					break;
 				default:
 					break;
 			}
 		}
+
+		onMounted(() => {
+			const iframeDoc = iframe.value.contentDoc;
+			const iframeWindow = iframe.value.contentWindow;
+			window.addEventListener("keydown", (e) => {
+				if (!e.ctrlKey || e.key !== "s") return;
+				e.preventDefault();
+				const bodyContent = iframeDoc.body.innerHTML;
+				const headContent = iframeDoc.head.innerHTML;
+				iframeWindow.location.reload();
+				iframeDoc.body.innerHTML = bodyContent;
+				iframeDoc.head.innerHTML = headContent;
+			});
+		});
 
 		return { iframe, updateEntry };
 	},
