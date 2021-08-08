@@ -25,8 +25,9 @@ import Tab from "./Tab.vue";
 import CodeMirror from "codemirror/lib/codemirror";
 
 export default {
-	setup() {
+	setup(_, { emit }) {
 		const editorEl = ref(null);
+		const iframe = ref(null);
 
 		let editor = {};
 		const buffers = {};
@@ -61,6 +62,23 @@ export default {
 		function openBuffer(name, text, mode) {
 			buffers[name] = CodeMirror.Doc(text, mode);
 		}
+		function setupListeners() {
+			editor.on("keyup", (target, { shiftKey, key }) => {
+				if (shiftKey && key === "Tab") return;
+				const { name: type } = target.doc.getMode();
+				const value = target.getValue();
+				emit("update", { type, value });
+			});
+
+			window.addEventListener(
+				"keydown",
+				({ shiftKey, key }) => {
+					if (shiftKey && key === "Tab")
+						currentTab.value = (currentTab.value + 1) % TABS.length;
+				},
+				true,
+			);
+		}
 
 		onMounted(() => {
 			editor = initCodeMirror({
@@ -77,6 +95,8 @@ export default {
 			});
 			TABS.forEach((tab) => openBuffer(tab.title, "", tab.type));
 			selectBuffer(editor, TABS[currentTab.value].title);
+
+			setupListeners();
 		});
 
 		watch(currentTab, (val) => selectBuffer(editor, TABS[val].title));
@@ -84,13 +104,14 @@ export default {
 		return { editorEl, TABS, currentTab };
 	},
 	components: { Tab },
+	emits: ["update"],
 };
 </script>
 
 <style lang="scss">
 .tabs {
 	width: 100%;
-	height: 100%;
+	max-height: 100vh;
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
