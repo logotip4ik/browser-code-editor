@@ -13,27 +13,23 @@
 				{{ title }}
 			</div>
 		</header>
-		<div class="editor" ref="editor">
-			<Tab
-				v-for="({ type }, idx) in TABS"
-				:key="idx"
-				:type="type"
-				v-show="idx === currentTab"
-			></Tab>
-		</div>
+		<div class="editor" ref="editorEl"></div>
 	</div>
 </template>
 
 <script>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { initCodeMirror } from "../helpers/initCodeMirror.js";
 
 import Tab from "./Tab.vue";
+import CodeMirror from "codemirror/lib/codemirror";
 
 export default {
 	setup() {
-		const htmlEdtior = ref(null);
+		const editorEl = ref(null);
 
+		let editor = {};
+		const buffers = {};
 		const TABS = [
 			{
 				title: "HTML",
@@ -48,9 +44,44 @@ export default {
 				type: "javascript",
 			},
 		];
-		const currentTab = ref(2);
+		const currentTab = ref(0);
 
-		return { htmlEdtior, TABS, currentTab };
+		function selectBuffer(editor, name) {
+			const buf = buffers[name];
+			if (buf.getEditor()) buf = buf.linkedDoc({ sharedHist: true });
+			const old = editor.swapDoc(buf);
+			const linked = old.iterLinkedDocs((doc) => (linked = doc));
+			if (linked) {
+				// Make sure the document in buffers is the one the other view is looking at
+				for (const name in buffers)
+					if (buffers[name] == old) buffers[name] = linked;
+				old.unlinkDoc(linked);
+			}
+		}
+		function openBuffer(name, text, mode) {
+			buffers[name] = CodeMirror.Doc(text, mode);
+		}
+
+		onMounted(() => {
+			editor = initCodeMirror({
+				target: editorEl.value,
+				isHtml: true,
+				opts: {
+					extraKeys: {
+						Tab: "emmetExpandAbbreviation",
+						Esc: "emmetResetAbbreviation",
+						Enter: "emmetInsertLineBreak",
+						"Ctrl-Space": "autocomplete",
+					},
+				},
+			});
+			TABS.forEach((tab) => openBuffer(tab.title, "", tab.type));
+			selectBuffer(editor, TABS[currentTab.value].title);
+		});
+
+		watch(currentTab, (val) => selectBuffer(editor, TABS[val].title));
+
+		return { editorEl, TABS, currentTab };
 	},
 	components: { Tab },
 };
@@ -108,5 +139,8 @@ export default {
 .editor {
 	height: 100%;
 	width: 100%;
+	// display: flex;
+	// justify-content: flex-start;
+	// align-items: flex-start;
 }
 </style>

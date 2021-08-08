@@ -30,7 +30,10 @@ export default {
 			target: this.$refs.tab,
 			isHtml: this.type.includes("html"),
 			opts: {
-				...(this.type.includes("html") ? opts : {}),
+				extraKeys: {
+					...(this.type.includes("html") ? opts.extraKeys : {}),
+					"Ctrl-Space": "autocomplete",
+				},
 			},
 		});
 	},

@@ -92,7 +92,7 @@ export const initCodeMirror = ({ target, mode, isHtml, opts }) => {
 	window.CSSLint = CSSLint;
 	// window.JSHint = JSHINT;
 	if (isHtml) emmet(CodeMirror);
-	return CodeMirror(target, {
+	return new CodeMirror(target, {
 		...DEFAULTS,
 		...opts,
 		mode,
