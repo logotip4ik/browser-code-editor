@@ -51,7 +51,7 @@ export default {
 			let buf = buffers[name];
 			if (buf.getEditor()) buf = buf.linkedDoc({ sharedHist: true });
 			const old = editor.swapDoc(buf);
-			const linked = old.iterLinkedDocs((doc) => (linked = doc));
+			let linked = old.iterLinkedDocs((doc) => (linked = doc));
 			if (linked) {
 				// Make sure the document in buffers is the one the other view is looking at
 				for (const name in buffers)
