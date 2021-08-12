@@ -18,15 +18,16 @@
 </template>
 
 <script>
-import { onMounted, ref, watch } from 'vue';
+// eslint-disable-next-line
+import { inject, onMounted, ref, watch } from 'vue';
 import CodeMirror from 'codemirror/lib/codemirror';
 
 import { initCodeMirror } from '../helpers/initCodeMirror';
 
 export default {
   setup(_, { emit }) {
+    const localStoragePrefix = inject('localStoragePrefix');
     const editorEl = ref(null);
-    // const iframe = ref(null);
 
     let EDITOR = {};
     const buffers = {};
@@ -91,6 +92,12 @@ export default {
     }
 
     onMounted(() => {
+      const htmlmixed = localStorage.getItem(`${localStoragePrefix}html`);
+      const css = localStorage.getItem(`${localStoragePrefix}css`);
+      const javascript = localStorage.getItem(`${localStoragePrefix}javascript`);
+
+      const values = { htmlmixed, css, javascript };
+
       EDITOR = initCodeMirror({
         target: editorEl.value,
         isHtml: true,
@@ -103,9 +110,13 @@ export default {
           },
         },
       });
-      TABS.forEach((tab) => openBuffer(tab.title, '', tab.type));
+      TABS.forEach((tab) => {
+        const value = values[tab.type] || '';
+        openBuffer(tab.title, value, tab.type);
+        // Need to wait, becouse iframe is not fully loaded
+        setTimeout(() => emit('update', { type: tab.type, value, initial: true }), 100);
+      });
       selectBuffer(EDITOR, TABS[currentTab.value].title);
-
       setupListeners();
     });
 

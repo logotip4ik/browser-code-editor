@@ -6,20 +6,24 @@
 </template>
 
 <script>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, provide } from 'vue';
 import Editor from './components/Editor.vue';
 
 export default {
   setup() {
+    const localStoragePrefix = '__browser_code_edior__';
+    provide('localStoragePrefix', localStoragePrefix);
+
     const iframe = ref(null);
     let createdIframeApp = false;
     let createdIframeStyleTag = false;
     // let CSSBlobLink = null;
 
-    function updateEntry({ type, value }) {
+    function updateEntry({ type, value, initial = false }) {
       const iframeDoc = iframe.value.contentDocument;
       switch (type) {
         case 'htmlmixed':
+          if (!initial) localStorage.setItem(`${localStoragePrefix}html`, value);
           if (createdIframeApp) {
             iframeDoc.getElementById('app').innerHTML = value;
             return;
@@ -36,6 +40,7 @@ export default {
           createdIframeApp = true;
           break;
         case 'css':
+          if (!initial) localStorage.setItem(`${localStoragePrefix}css`, value);
           if (createdIframeStyleTag) {
             iframeDoc.head.children[0].innerHTML = value;
             return;
@@ -46,8 +51,10 @@ export default {
           iframeStyle.innerHTML = value;
           iframeDoc.head.appendChild(iframeStyle);
           createdIframeStyleTag = true;
+
           break;
         case 'javascript':
+          if (!initial) localStorage.setItem(`${localStoragePrefix}javascript`, value);
           // eslint-disable-next-line no-case-declarations
           const iframeWindow = iframe.value.contentWindow;
 
